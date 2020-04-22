@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -37,11 +38,12 @@ func (pm *ProcessManagerServer) routeCreateDedicatedServerProcess(w http.Respons
 	}
 	if pm.Processes < pm.Configuration.TotalProcesses {
 		// Start a new instance of the configured server binary.
-		process, err := createServerProcess("ls")
+		process, err := createServerProcess(pm.Configuration.DedicatedServerPath)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		pm.State["server1"] = process
+		fmt.Println(process.Pid)
 		pm.Processes++
 	} else {
 		w.WriteHeader(http.StatusServiceUnavailable)
