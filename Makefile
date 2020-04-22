@@ -6,4 +6,4 @@ run-mac:
 	./bin/mac/ue4-process-manager
 
 run:
-	./bin/linux/ue4-process/manager
+	./bin/linux/ue4-process-manager
