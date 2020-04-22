@@ -1,3 +1,4 @@
 {
-    "dedicated-server-path": ""
+    "dedicated_server_path": "",
+    "total_processes": 3
 }

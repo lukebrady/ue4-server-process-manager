@@ -3,40 +3,55 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 )
 
 // ProcessManagerServer is the HTTP server that recieves requests
 // to create and terminate Unreal Engine dedicated server processes.
 type ProcessManagerServer struct {
-	Host       string
-	Port       int
-	State      map[string]string
-	HTTPServer *http.ServeMux
+	Host          string
+	Port          int
+	Processes     int
+	State         map[string]*os.Process
+	Configuration *ProcessManagerServerConfiguration
+	HTTPServer    *http.ServeMux
 }
 
 // NewProcessManagerServer ;
-func NewProcessManagerServer(host string, port int) *ProcessManagerServer {
+func NewProcessManagerServer(host string, port int, configuration *ProcessManagerServerConfiguration) *ProcessManagerServer {
 	return &ProcessManagerServer{
-		Host:       host,
-		Port:       port,
-		State:      make(map[string]string),
-		HTTPServer: http.NewServeMux(),
+		Host:          host,
+		Port:          port,
+		Processes:     0,
+		Configuration: configuration,
+		State:         make(map[string]*os.Process),
+		HTTPServer:    http.NewServeMux(),
 	}
 }
 
-func (pm *ProcessManagerServer) createDedicatedServerProcess(w http.ResponseWriter, r *http.Request) {
+func (pm *ProcessManagerServer) routeCreateDedicatedServerProcess(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		log.Println(r.Method + " /create - 405")
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
-	// Start a new instance of the configured server binary.
+	if pm.Processes < pm.Configuration.TotalProcesses {
+		// Start a new instance of the configured server binary.
+		process, err := createServerProcess("ls")
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		pm.State["server1"] = process
+		pm.Processes++
+	} else {
+		w.WriteHeader(http.StatusServiceUnavailable)
+	}
 }
 
 // Start starts the ProcessManager HTTP server.
 func (pm *ProcessManagerServer) Start() {
 	hostString := pm.Host + ":" + strconv.Itoa(pm.Port)
-	pm.HTTPServer.HandleFunc("/create", pm.createDedicatedServerProcess)
+	pm.HTTPServer.HandleFunc("/create", pm.routeCreateDedicatedServerProcess)
 	err := http.ListenAndServe(hostString, pm.HTTPServer)
 	if err != nil {
 		log.Fatal(err)
