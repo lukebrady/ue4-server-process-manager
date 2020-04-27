@@ -19,7 +19,7 @@ type ProcessManagerServer struct {
 	HTTPServer    *http.ServeMux
 }
 
-// NewProcessManagerServer ;
+// NewProcessManagerServer creates a pointer to a ProcessManagerServer object.
 func NewProcessManagerServer(host string, port int, configuration *ProcessManagerServerConfiguration) *ProcessManagerServer {
 	return &ProcessManagerServer{
 		Host:          host,
@@ -42,7 +42,7 @@ func (pm *ProcessManagerServer) routeCreateDedicatedServerProcess(w http.Respons
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
-		pm.State["server1"] = process
+		pm.State["test"] = process
 		fmt.Println(process.Pid)
 		pm.Processes++
 	} else {

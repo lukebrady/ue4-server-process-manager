@@ -12,9 +12,9 @@ type ProcessManagerServerConfiguration struct {
 	TotalProcesses      int    `json:"total_processes"`
 }
 
-// NewProcessManagerServerConfiguration creates a new Configuration object and returns the pointer to the configuration.
+// NewProcessManagerServerConfigurationFromFile creates a new Configuration object and returns the pointer to the configuration.
 // This configuration is marshalled directly from a supplied JSON file.
-func NewProcessManagerServerConfiguration(path string) (*ProcessManagerServerConfiguration, error) {
+func NewProcessManagerServerConfigurationFromFile(path string) (*ProcessManagerServerConfiguration, error) {
 	configurationObject := &ProcessManagerServerConfiguration{}
 	configuration, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -26,4 +26,13 @@ func NewProcessManagerServerConfiguration(path string) (*ProcessManagerServerCon
 		return nil, err
 	}
 	return configurationObject, nil
+}
+
+// NewProcessManagerServerConfiguration creates a new Configuration object and returns the pointer to the configuration.
+func NewProcessManagerServerConfiguration(path string, totalProcesses int) *ProcessManagerServerConfiguration {
+	configurationObject := &ProcessManagerServerConfiguration{
+		DedicatedServerPath: path,
+		TotalProcesses:      totalProcesses,
+	}
+	return configurationObject
 }
