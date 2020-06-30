@@ -1,4 +1,4 @@
-package main
+package ue4lspm
 
 import (
 	"encoding/json"

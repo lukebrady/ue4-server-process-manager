@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"log"
+
+	lspm "github.com/lukebrady/ue4-server-process-manager/internal/ue4lspm"
 )
 
 func main() {
@@ -11,16 +13,16 @@ func main() {
 	path := flag.String("path", "", "Path to the executable.")
 	flag.Parse()
 
-	var configuration *ProcessManagerServerConfiguration
+	var configuration *lspm.ProcessManagerServerConfiguration
 	var err error
 	if len(*configurationFile) > 1 {
-		configuration, err = NewProcessManagerServerConfigurationFromFile("config/configuration.json")
+		configuration, err = lspm.NewProcessManagerServerConfigurationFromFile("config/configuration.json")
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
-		configuration = NewProcessManagerServerConfiguration(*path, *totalProcesses)
+		configuration = lspm.NewProcessManagerServerConfiguration(*path, *totalProcesses)
 	}
-	server := NewProcessManagerServer("0.0.0.0", 8086, configuration)
+	server := lspm.NewProcessManagerServer("0.0.0.0", 8086, configuration)
 	server.Start()
 }
